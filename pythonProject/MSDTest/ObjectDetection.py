@@ -55,6 +55,8 @@ def getContours(img,imgContour):
 while True:
     go = arduino.getData()
     if go[0]=='9':
+        squarevals=[]
+        circlevals=[]
         framesread=0
         while framesread<100:
             # success, img = cap.read() #add when using cam
@@ -69,21 +71,25 @@ while True:
             kernel = numpy.ones((5, 5), )
             imgDialation = cv2.dilate(imgCanny, kernel, iterations=1)
             idobj = getContours(imgCanny, imgContour)
+            squarevals.append(idobj[0])
+            circlevals.append(idobj[1])
             cv2.imshow("Image", imgContour)
             cv2.imshow("ImageC", imgCanny)
             cv2.resizeWindow("Image", 1000, 1000)
             cv2.waitKey(1)
             framesread = framesread+1
         cv2.destroyAllWindows()
-        if idobj[0]==2 and idobj[1]==0:
+        maxsqval = max(squarevals)
+        maxcircval = max(circlevals)
+        if maxsqval==2 and maxcircval==0:
             arduino.sendData([1])
             img = cv2.imread("../TestImg/circleb.png")
-        elif idobj[0]==1 and idobj[1]==0:
+        elif maxsqval==1 and maxcircval==0:
             arduino.sendData([2])
             img = cv2.imread("../TestImg/circlel.png")
-        elif idobj[0]==0 and idobj[1]==2:
+        elif maxsqval==0 and maxcircval==2:
             arduino.sendData([3])
-        elif idobj[0]==0 and idobj[1]==1:
+        elif maxsqval==0 and maxcircval==1:
             arduino.sendData([4])
             img = cv2.imread("../TestImg/cubeb.png")
 
