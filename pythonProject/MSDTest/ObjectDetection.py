@@ -108,58 +108,69 @@ while True:
                 if go[0] == '8':
                     go[0]='0'
                     break
-    i=0
-    while i<len(arduinolist):
-        print(arduinolist[i])
-        i+=1
-    currentposition=len(arduinolist)-1
-    final=[]
-    if arduinolist[currentposition] in ("sl","cl"):
-        j = 0
-        while j<len(arduinolist):
-            if arduinolist[(currentposition+j+1)%len(arduinolist)] in ("sb","cb"):
-                final.append((currentposition+j+1)%len(arduinolist))
+    print(arduinolist)
+    currentposition = len(arduinolist) - 1
+    final = []
+    if arduinolist[currentposition] in ("sl", "cl"):
+        k = 1
+        while k <= len(arduinolist):
+            if arduinolist[(currentposition + k) % len(arduinolist)] in ("sb", "cb"):
+                final.append(k*45)
                 final.append("ccw")
-                currentposition = (currentposition+j+1)%len(arduinolist)
+                currentposition = (currentposition + k) % len(arduinolist)
                 break
-            elif arduinolist[(currentposition-(j+1))%len(arduinolist)] in ("sb","cb"):
-                final.append((currentposition-(j+1))%len(arduinolist))
+            elif arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)] in ("sb", "cb"):
+                final.append(k*45)
                 final.append("cw")
-                currentposition = (currentposition-(j+1))%len(arduinolist)
+                currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
                 break
-            j+=1
-    j=0
-    passed=[]
-    while j<len(arduinolist)-1:
-        i = currentposition
-        objtype=arduinolist[currentposition][0]
-        passed.append(i)
-        turns = 1
-        direction = "ccw"
-        while i<currentposition+len(arduinolist):
-            if (i+1)%len(arduinolist) in passed:
-                i += 1
-                turns += 1
-                continue
-            nextobject = arduinolist[((i+1) % len(arduinolist))]
-            if ((nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c")) and j%2==0:
-                if turns>(len(arduinolist)/2):
-                    direction="cw"
-                currentposition = (i+1) % len(arduinolist)
-                final.append((i+1) % len(arduinolist))
-                final.append(direction)
-                break
-            elif (nextobject in ("sb","cb")) and j%2==1:
-                if turns>(len(arduinolist)/2):
-                    direction="cw"
-                currentposition = (i+1) % len(arduinolist)
-                final.append((i+1) % len(arduinolist))
-                final.append(direction)
-                break
-            i += 1
-            turns += 1
-        j+=1
+            k += 1
+    j = 0
+    passed = []
+    while j < len(arduinolist) - 1:
+        k = 1
+        passed.append(currentposition)
+        objtype = arduinolist[currentposition][0]
+        if arduinolist[currentposition] in ("sb", "cb"):
+            while k <= len(arduinolist):
+                nextobject = arduinolist[(currentposition + k) % len(arduinolist)]
+                if (currentposition + k) % len(arduinolist) in passed:
+                    pass
+                elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
+                    final.append(k*45)
+                    final.append("ccw")
+                    final.append(objtype)
+                    currentposition = (currentposition + k) % len(arduinolist)
+                    break
+                nextobject = arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)]
+                if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
+                    pass
+                elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
+                    final.append(k*45)
+                    final.append("cw")
+                    final.append(objtype)
+                    currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
+                    break
+                k += 1
+        elif arduinolist[currentposition] in ("sl", "cl"):
+            while k <= len(arduinolist):
+                nextobject = arduinolist[(currentposition + k) % len(arduinolist)]
+                if (currentposition + k) % len(arduinolist) in passed:
+                    pass
+                elif nextobject in ("sb", "cb"):
+                    final.append(k*45)
+                    final.append("ccw")
+                    currentposition = (currentposition + k) % len(arduinolist)
+                    break
+                nextobject = arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)]
+                if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
+                    pass
+                elif nextobject in ("sb", "cb"):
+                    final.append(k*45)
+                    final.append("cw")
+                    currentposition = (currentposition - (k) + len(arduinolist) % len(arduinolist))
+                    break
+                k += 1
+        j += 1
     i = 0
-    while i < len(final):
-        print(final[i])
-        i += 1
+    print(final)

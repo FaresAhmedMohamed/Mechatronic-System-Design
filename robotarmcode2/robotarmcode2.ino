@@ -42,6 +42,7 @@ if (digitalRead(13)==1)
     counter++;
     }
     serialData.Send(signalout);
+    
 }
 }
 
