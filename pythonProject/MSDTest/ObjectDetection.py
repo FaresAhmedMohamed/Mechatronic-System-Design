@@ -53,74 +53,69 @@ def most_frequent(List):
     index = numpy.argmax(counts)
     return unique[index]
 
-#cv2.namedWindow("Parameters")
-#cv2.resizeWindow("Parameters",640,240)
-#cv2.createTrackbar("Threshold1","Parameters",130,255,empty)
-#cv2.createTrackbar("Threshold2","Parameters",20,255,empty)
+def vision():
+    counter = 0
+    arduinolist = []
+    while counter < 4:
+        squarevals = []
+        circlevals = []
+        framesread = 0
+        while framesread < 100:
+            # success, img = cap.read() #add when using cam
+            imgContour = img.copy()
+            imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            imgBlur = cv2.GaussianBlur(imgGray, (11, 11), 0)
+            # threshold1 = cv2.getTrackbarPos("Threshold1", "Parameters")
+            # threshold2 = cv2.getTrackbarPos("Threshold2", "Parameters")
+            threshold1 = 130
+            threshold2 = 20
+            imgCanny = cv2.Canny(imgBlur, threshold1, threshold2)
+            kernel = numpy.ones((3, 3), )
+            # imgDilation = cv2.dilate(imgCanny, kernel, iterations=1)
+            # imgErosion = cv2.erode(imgCanny, kernel, iterations=1)
+            idobj = getContours(imgCanny, imgContour)
+            squarevals.append(idobj[0])
+            circlevals.append(idobj[1])
+            cv2.imshow("Image", imgContour)
+            # cv2.imshow("ImageC", imgCanny)
+            cv2.resizeWindow("Image", 1200, 1200)
+            cv2.waitKey(1)
+            framesread = framesread + 1
+        cv2.destroyAllWindows()
+        sqval = most_frequent(squarevals)
+        circval = most_frequent(circlevals)
+        if sqval == 2 and circval == 0:
+            arduinolist.append("sb")
+        elif sqval == 1 and circval == 0:
+            arduinolist.append("sl")
+        elif sqval == 0 and circval == 2:
+            arduinolist.append("cb")
+        elif sqval == 0 and circval == 1:
+            arduinolist.append("cl")
+        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
-while True:
-    go = arduino.getData()
-    if go[0]=='9':
-        counter=0
-        arduinolist=[]
-        while counter<4:
-            squarevals=[]
-            circlevals=[]
-            framesread=0
-            while framesread<100:
-                # success, img = cap.read() #add when using cam
-                imgContour = img.copy()
-                imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                imgBlur = cv2.GaussianBlur(imgGray, (11, 11), 0)
-                #threshold1 = cv2.getTrackbarPos("Threshold1", "Parameters")
-                #threshold2 = cv2.getTrackbarPos("Threshold2", "Parameters")
-                threshold1 = 130
-                threshold2 = 20
-                imgCanny = cv2.Canny(imgBlur, threshold1, threshold2)
-                kernel = numpy.ones((3, 3), )
-                #imgDilation = cv2.dilate(imgCanny, kernel, iterations=1)
-                #imgErosion = cv2.erode(imgCanny, kernel, iterations=1)
-                idobj = getContours(imgCanny, imgContour)
-                squarevals.append(idobj[0])
-                circlevals.append(idobj[1])
-                cv2.imshow("Image", imgContour)
-                #cv2.imshow("ImageC", imgCanny)
-                cv2.resizeWindow("Image", 1200, 1200)
-                cv2.waitKey(1)
-                framesread = framesread+1
-            cv2.destroyAllWindows()
-            sqval = most_frequent(squarevals)
-            circval = most_frequent(circlevals)
-            if sqval==2 and circval==0:
-                arduinolist.append("sb")
-            elif sqval==1 and circval==0:
-                arduinolist.append("sl")
-            elif sqval==0 and circval==2:
-                arduinolist.append("cb")
-            elif sqval==0 and circval==1:
-                arduinolist.append("cl")
-            img = cv2.rotate(img,cv2.ROTATE_90_CLOCKWISE)
+        counter += 1
+        arduino.sendData([counter])
+        while True:
+            go = arduino.getData()
+            if go[0] == '8':
+                go[0] = '0'
+                break
+    return arduinolist
 
-            counter+=1
-            arduino.sendData([counter])
-            while True:
-                go = arduino.getData()
-                if go[0] == '8':
-                    go[0]='0'
-                    break
-    print(arduinolist)
+def sorting(arduinolist):
     currentposition = len(arduinolist) - 1
     final = []
     if arduinolist[currentposition] in ("sl", "cl"):
         k = 1
         while k <= len(arduinolist):
             if arduinolist[(currentposition + k) % len(arduinolist)] in ("sb", "cb"):
-                final.append(k*45)
+                final.append(k * 45)
                 final.append("ccw")
                 currentposition = (currentposition + k) % len(arduinolist)
                 break
             elif arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)] in ("sb", "cb"):
-                final.append(k*45)
+                final.append(k * 45)
                 final.append("cw")
                 currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
                 break
@@ -137,7 +132,7 @@ while True:
                 if (currentposition + k) % len(arduinolist) in passed:
                     pass
                 elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
-                    final.append(k*45)
+                    final.append(k * 45)
                     final.append("ccw")
                     final.append(objtype)
                     currentposition = (currentposition + k) % len(arduinolist)
@@ -146,7 +141,7 @@ while True:
                 if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
                     pass
                 elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
-                    final.append(k*45)
+                    final.append(k * 45)
                     final.append("cw")
                     final.append(objtype)
                     currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
@@ -158,7 +153,7 @@ while True:
                 if (currentposition + k) % len(arduinolist) in passed:
                     pass
                 elif nextobject in ("sb", "cb"):
-                    final.append(k*45)
+                    final.append(k * 45)
                     final.append("ccw")
                     currentposition = (currentposition + k) % len(arduinolist)
                     break
@@ -166,11 +161,25 @@ while True:
                 if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
                     pass
                 elif nextobject in ("sb", "cb"):
-                    final.append(k*45)
+                    final.append(k * 45)
                     final.append("cw")
                     currentposition = (currentposition - (k) + len(arduinolist) % len(arduinolist))
                     break
                 k += 1
         j += 1
-    i = 0
+    return final
+
+#cv2.namedWindow("Parameters")
+#cv2.resizeWindow("Parameters",640,240)
+#cv2.createTrackbar("Threshold1","Parameters",130,255,empty)
+#cv2.createTrackbar("Threshold2","Parameters",20,255,empty)
+
+while True:
+    #go = arduino.getData()
+    go=[]
+    go[0]='9'
+    if go[0]=='9':
+        arduinolist=vision()
+    print(arduinolist)
+    final = sorting()
     print(final)
