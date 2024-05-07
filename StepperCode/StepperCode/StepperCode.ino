@@ -16,7 +16,6 @@ int HomeX = 0;
 int HomeY = 0;
 int HomeZ = 0;
 
-
 void setup() {
   pinMode(LimitX,INPUT_PULLUP);
   pinMode(LimitY,INPUT_PULLUP);
@@ -104,4 +103,74 @@ void Home(){
   }
   StepperX.setCurrentPosition(0);
   StepperY.setCurrentPosition(0);
+}
+
+void Actuate(int xangle, int yangle, int zangle){
+  int x;
+  int y;
+  int z;
+  if(xangle>=0){
+    x=ceil(xangle*ratio);
+    StepperX.moveTo(x);
+  }
+  else{
+    x=-ceil(abs(xangle*ratio));
+    StepperX.moveTo(x);
+  }
+  if(yangle>=0){
+    y=ceil(yangle*ratio);
+    StepperY.moveTo(y);
+  }
+  else{
+    y=-ceil(abs(yangle*ratio));
+    StepperY.moveTo(y);
+  }
+  if(zangle>=0){
+    z=ceil(zangle*ratio);
+    StepperZ.moveTo(z);
+  }
+  else{
+    z=-ceil(abs(zangle*ratio));
+    StepperZ.moveTo(z);
+  }
+  while(StepperX.currentPosition()!=x || StepperY.currentPosition()!=y || StepperZ.currentPosition()!=z){
+    StepperX.run();
+    StepperY.run();
+    StepperZ.run();
+  }
+}
+
+void ActuateRelative(int xangle, int yangle, int zangle){
+  int x;
+  int y;
+  int z;
+  if(xangle>=0){
+    x=ceil(xangle*ratio);
+    StepperX.move(x);
+  }
+  else{
+    x=-ceil(abs(xangle*ratio));
+    StepperX.move(x);
+  }
+  if(yangle>=0){
+    y=ceil(yangle*ratio);
+    StepperY.move(y);
+  }
+  else{
+    y=-ceil(abs(yangle*ratio));
+    StepperY.move(y);
+  }
+  if(zangle>=0){
+    z=ceil(zangle*ratio);
+    StepperZ.move(z);
+  }
+  else{
+    z=-ceil(abs(zangle*ratio));
+    StepperZ.move(z);
+  }
+  while(StepperX.currentPosition()!=x || StepperY.currentPosition()!=y || StepperZ.currentPosition()!=z){
+    StepperX.run();
+    StepperY.run();
+    StepperZ.run();
+  }
 }

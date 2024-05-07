@@ -39,36 +39,6 @@ if (digitalRead(13)==0)
     signalout[0]=8-counter;
     serialData.Send(signalout);
     delay(100);
-    /*int sequence[20]={0};
-    int index=0;
-    while(1)
-    {
-      signalin[0]=0;
-      while(1)
-      {
-      serialData.Get(signalin);
-      if(signalin[0]>0 && signalin[0]<10)
-        {
-          break;
-        }
-      }
-      if(signalin[0]==9)
-        {
-        break;
-        }
-      sequence[index]=signalin[0];
-      signalout[0]=(index%8);
-      serialData.Send(signalout);
-      delay(5);
-      index++;
-    }
-    delay(5);
-    signalout[0]=(index%8);
-    serialData.Send(signalout);
-    delay(1000);
-    signalout[0]=sequence[0];
-    serialData.Send(signalout);
-    */
     int h=0;
     while(h<2000){
       serialData.Get(signalin);
