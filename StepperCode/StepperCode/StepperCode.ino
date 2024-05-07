@@ -37,23 +37,6 @@ void setup() {
 
 void loop() {
   Home();
-  StepperX.moveTo(-ceil(10*ratio));
-  while(StepperX.currentPosition()!=-ceil(7*ratio)){
-    StepperX.run();
-  }
-  for (grip; grip <= 170; grip += 1) {
-    Gripper.write(grip);
-    delay(3);
-  }
-  StepperZ.moveTo(-ceil(90*ratio));
-  while(StepperZ.currentPosition()!=-ceil(90*ratio)){
-    StepperZ.run();
-  }
-  for (grip; grip >= 85; grip -= 1) {
-    Gripper.write(grip);              
-    delay(3);                       
-  }
-  delay(100000);
 }
 
 void Home(){
@@ -174,3 +157,18 @@ void ActuateRelative(int xangle, int yangle, int zangle){
     StepperZ.run();
   }
 }
+
+void Grip(){
+    for (grip; grip <= 170; grip += 1) {
+    Gripper.write(grip);
+    delay(3);
+  }
+}
+
+void UnGrip(){
+    for (grip; grip >= 85; grip -= 1) {
+    Gripper.write(grip);              
+    delay(3);                       
+  }
+}
+
