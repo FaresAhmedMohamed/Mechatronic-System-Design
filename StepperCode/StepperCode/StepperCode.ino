@@ -37,34 +37,27 @@ void setup() {
 }
 
 void loop() {
-  /*StepperX.moveTo(200);
-  StepperY.moveTo(-300);
-  StepperZ.moveTo(400);
-  while(StepperX.currentPosition()!=200 || StepperY.currentPosition()!=-300 || StepperZ.currentPosition()!=400){
+  Home();
+  StepperX.moveTo(-ceil(10*ratio));
+  while(StepperX.currentPosition()!=-ceil(7*ratio)){
     StepperX.run();
-    StepperY.run();
-    StepperZ.run();
   }
-  delay(2000);
-    for (grip; grip <= 170; grip += 1) {
+  for (grip; grip <= 170; grip += 1) {
     Gripper.write(grip);
     delay(3);
   }
-  delay(2000);
-  StepperX.moveTo(-200);
-  StepperY.moveTo(150);
-  StepperZ.moveTo(-400);
-  while(StepperX.currentPosition()!=-200 || StepperY.currentPosition()!=150 || StepperZ.currentPosition()!=-400){
-    StepperX.run();
-    StepperY.run();
+  StepperZ.moveTo(-ceil(90*ratio));
+  while(StepperZ.currentPosition()!=-ceil(90*ratio)){
     StepperZ.run();
   }
-  delay(2000);
   for (grip; grip >= 85; grip -= 1) {
     Gripper.write(grip);              
     delay(3);                       
   }
-  delay(2000);*/
+  delay(100000);
+}
+
+void Home(){
   StepperX.setSpeed(200);
   StepperY.setSpeed(-400);
   StepperZ.setSpeed(400);
@@ -111,21 +104,4 @@ void loop() {
   }
   StepperX.setCurrentPosition(0);
   StepperY.setCurrentPosition(0);
-  StepperX.moveTo(-ceil(10*ratio));
-  while(StepperX.currentPosition()!=-ceil(7*ratio)){
-    StepperX.run();
-  }
-  for (grip; grip <= 170; grip += 1) {
-    Gripper.write(grip);
-    delay(3);
-  }
-  StepperZ.moveTo(-ceil(90*ratio));
-  while(StepperZ.currentPosition()!=-ceil(90*ratio)){
-    StepperZ.run();
-  }
-  for (grip; grip >= 85; grip -= 1) {
-    Gripper.write(grip);              
-    delay(3);                       
-  }
-  delay(100000);
 }

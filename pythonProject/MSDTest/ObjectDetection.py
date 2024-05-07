@@ -2,10 +2,15 @@ from cvzone.SerialModule import SerialObject
 import cv2
 import numpy
 
+# final-> 1-45, 2-90, 3-135, 4-180, 5-ccw, 6-cw, square-7, circle-8
+
 arduino = SerialObject()
 #cap = cv2.VideoCapture(0)
 img = cv2.imread("../TestImg/4objects.png") #remove when using cam
+img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
+def empty(a):
+    pass
 
 def getContours(img,imgContour):
     squares=0
@@ -53,10 +58,10 @@ def most_frequent(List):
     index = numpy.argmax(counts)
     return unique[index]
 
-def vision():
+def vision(img):
     counter = 0
     arduinolist = []
-    while counter < 4:
+    while counter < 8:
         squarevals = []
         circlevals = []
         framesread = 0
@@ -80,7 +85,7 @@ def vision():
             # cv2.imshow("ImageC", imgCanny)
             cv2.resizeWindow("Image", 1200, 1200)
             cv2.waitKey(1)
-            framesread = framesread + 1
+            framesread += 1
         cv2.destroyAllWindows()
         sqval = most_frequent(squarevals)
         circval = most_frequent(circlevals)
@@ -96,9 +101,10 @@ def vision():
 
         counter += 1
         arduino.sendData([counter])
+        cv2.waitKey(5)
         while True:
             go = arduino.getData()
-            if go[0] == '8':
+            if go[0] == str(9-counter):
                 go[0] = '0'
                 break
     return arduinolist
@@ -110,16 +116,19 @@ def sorting(arduinolist):
         k = 1
         while k <= len(arduinolist):
             if arduinolist[(currentposition + k) % len(arduinolist)] in ("sb", "cb"):
-                final.append(k * 45)
-                final.append("ccw")
+                final.append(k)
+                final.append(5)
                 currentposition = (currentposition + k) % len(arduinolist)
                 break
             elif arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)] in ("sb", "cb"):
-                final.append(k * 45)
-                final.append("cw")
+                final.append(k)
+                final.append(6)
                 currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
                 break
             k += 1
+    else:
+        final.append(0)
+        final.append(0)
     j = 0
     passed = []
     while j < len(arduinolist) - 1:
@@ -132,18 +141,24 @@ def sorting(arduinolist):
                 if (currentposition + k) % len(arduinolist) in passed:
                     pass
                 elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
-                    final.append(k * 45)
-                    final.append("ccw")
-                    final.append(objtype)
+                    final.append(k)
+                    final.append(5)
+                    if objtype == "s":
+                        final.append(7)
+                    elif objtype == "c":
+                        final.append(8)
                     currentposition = (currentposition + k) % len(arduinolist)
                     break
                 nextobject = arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)]
                 if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
                     pass
                 elif (nextobject == "sl" and objtype == "s") or (nextobject == "cl" and objtype == "c"):
-                    final.append(k * 45)
-                    final.append("cw")
-                    final.append(objtype)
+                    final.append(k)
+                    final.append(6)
+                    if objtype == "s":
+                        final.append(7)
+                    elif objtype == "c":
+                        final.append(8)
                     currentposition = (currentposition - (k) + len(arduinolist)) % len(arduinolist)
                     break
                 k += 1
@@ -153,16 +168,16 @@ def sorting(arduinolist):
                 if (currentposition + k) % len(arduinolist) in passed:
                     pass
                 elif nextobject in ("sb", "cb"):
-                    final.append(k * 45)
-                    final.append("ccw")
+                    final.append(k)
+                    final.append(5)
                     currentposition = (currentposition + k) % len(arduinolist)
                     break
                 nextobject = arduinolist[(currentposition - (k) + len(arduinolist)) % len(arduinolist)]
                 if (currentposition - (k) + len(arduinolist)) % len(arduinolist) in passed:
                     pass
                 elif nextobject in ("sb", "cb"):
-                    final.append(k * 45)
-                    final.append("cw")
+                    final.append(k)
+                    final.append(6)
                     currentposition = (currentposition - (k) + len(arduinolist) % len(arduinolist))
                     break
                 k += 1
@@ -175,11 +190,15 @@ def sorting(arduinolist):
 #cv2.createTrackbar("Threshold2","Parameters",20,255,empty)
 
 while True:
-    #go = arduino.getData()
-    go=[]
-    go[0]='9'
+    go = arduino.getData()
     if go[0]=='9':
-        arduinolist=vision()
+        arduinolist=vision(img)
     print(arduinolist)
-    final = sorting()
+    final = sorting(arduinolist)
     print(final)
+    cv2.waitKey(3000)
+    arduino.sendData(final)
+    cv2.waitKey(100)
+    print("Done")
+    while True:
+        print(arduino.getData())
