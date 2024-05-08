@@ -1,7 +1,7 @@
 #include <AccelStepper.h>
 #include <Servo.h>
 // Define the stepper motor and the pins that is connected to
-AccelStepper StepperX(1, 2, 5); // (Type of driver: with 2 pins, STEP, DIR)
+AccelStepper StepperX(1, 1, 5); // (Type of driver: with 2 pins, STEP, DIR)
 AccelStepper StepperY(1, 3, 6);
 AccelStepper StepperZ(1, 4, 7);
 Servo Gripper;
@@ -32,11 +32,13 @@ void setup() {
   Gripper.attach(A3);
   Gripper.write(grip);
   Serial.begin(9600);
+  
   delay(5000);
+  Home();
 }
 
 void loop() {
-  Home();
+  
 }
 
 void Home(){

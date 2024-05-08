@@ -3,11 +3,10 @@ import cv2
 import numpy
 
 # final-> 1-45, 2-90, 3-135, 4-180, 5-ccw, 6-cw, square-7, circle-8
-
-arduino = SerialObject()
-#cap = cv2.VideoCapture(0)
-img = cv2.imread("../TestImg/4objects.png") #remove when using cam
-img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+arduino = SerialObject("COM5")
+cap = cv2.VideoCapture(1)
+#img = cv2.imread("../TestImg/4objects.png") #remove when using cam
+#img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 def empty(a):
     pass
@@ -21,7 +20,7 @@ def getContours(img,imgContour):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area==0 or area<1000:
+        if area==0 or area<1100:
             continue
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
@@ -35,7 +34,7 @@ def getContours(img,imgContour):
         prevarea = area
         px=x
         py=y
-        if x < 600 and y < 600:
+        if x>60 and x<380 and y>60 and y<300:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 3)
             if objCor == 4:
                 aspRatio = w/float(h)
@@ -58,7 +57,7 @@ def most_frequent(List):
     index = numpy.argmax(counts)
     return unique[index]
 
-def vision(img):
+def vision():
     counter = 0
     arduinolist = []
     while counter < 8:
@@ -66,24 +65,23 @@ def vision(img):
         circlevals = []
         framesread = 0
         while framesread < 100:
-            # success, img = cap.read() #add when using cam
+            success, img = cap.read() #add when using cam
             imgContour = img.copy()
             imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            imgBlur = cv2.GaussianBlur(imgGray, (11, 11), 0)
+            imgBlur = cv2.GaussianBlur(imgGray, (9, 9), 0)
             # threshold1 = cv2.getTrackbarPos("Threshold1", "Parameters")
             # threshold2 = cv2.getTrackbarPos("Threshold2", "Parameters")
-            threshold1 = 130
-            threshold2 = 20
+            threshold1 = 90
+            threshold2 = 35
             imgCanny = cv2.Canny(imgBlur, threshold1, threshold2)
             kernel = numpy.ones((3, 3), )
-            # imgDilation = cv2.dilate(imgCanny, kernel, iterations=1)
-            # imgErosion = cv2.erode(imgCanny, kernel, iterations=1)
-            idobj = getContours(imgCanny, imgContour)
+            imgDilation = cv2.dilate(imgCanny, kernel, iterations=1)
+            imgErosion = cv2.erode(imgDilation, kernel, iterations=1)
+            idobj = getContours(imgErosion, imgContour)
             squarevals.append(idobj[0])
             circlevals.append(idobj[1])
             cv2.imshow("Image", imgContour)
             # cv2.imshow("ImageC", imgCanny)
-            cv2.resizeWindow("Image", 1200, 1200)
             cv2.waitKey(1)
             framesread += 1
         cv2.destroyAllWindows()
@@ -192,7 +190,7 @@ def sorting(arduinolist):
 while True:
     go = arduino.getData()
     if go[0]=='9':
-        arduinolist=vision(img)
+        arduinolist=vision()
     print(arduinolist)
     final = sorting(arduinolist)
     print(final)
