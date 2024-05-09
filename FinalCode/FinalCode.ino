@@ -77,6 +77,7 @@ void loop() {
   time1=micros();
   vision();
   delay(3000);
+  time1=micros();
   AvengersAssemble();
   delay(5000);
    }
@@ -143,12 +144,16 @@ void lid(){
 }
 
 void storesquare(){
+  if(storagesquare==0){
   Actuate(-24,4,-61);
   Grip();
   Actuate(5,-65,-61);
   Actuate(5,-65,-103);
   Actuate(-18,0,-103);
   UnGrip();
+  }
+  else if(storagesquare==1){
+  }
 }
 
 void storecircle(){

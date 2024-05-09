@@ -1,9 +1,8 @@
-import sys
 
 import cv2
 import numpy
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 def empty(a):
     pass
@@ -17,7 +16,7 @@ def getContours(img,imgContour):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area==0 or area<2000:
+        if area==0 or area<1000:
             continue
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
@@ -31,7 +30,7 @@ def getContours(img,imgContour):
         prevarea = area
         px=x
         py=y
-        if x>60 and x<380 and y>60 and y<300:
+        if x>60 and x<380 and y>60 and y<320:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 3)
             if objCor == 4:
                 aspRatio = w/float(h)
@@ -66,8 +65,8 @@ while True:
     threshold2 = cv2.getTrackbarPos("Threshold2", "Parameters")
     imgCanny = cv2.Canny(imgBlur, threshold1, threshold2)
     kernel = numpy.ones((3, 3), )
-    imgDilation = cv2.dilate(imgCanny, kernel, iterations=1)
-    imgErosion = cv2.erode(imgDilation, kernel, iterations=1)
+    imgDilation = cv2.dilate(imgCanny, kernel, iterations=2)
+    imgErosion = cv2.erode(imgDilation, kernel, iterations=2)
     idobj = getContours(imgErosion, imgContour)
     squarevals.append(idobj[0])
     circlevals.append(idobj[1])
