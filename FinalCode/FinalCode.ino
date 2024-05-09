@@ -35,7 +35,7 @@ int targ = 45;
 const int maxspeed = 400;
 const int accel = 400;
 const float ratio = (800/101.25);
-int grip = 75;
+int grip = 9;
 int HomeX = 0;
 int HomeY = 0;
 int HomeZ = 0;
@@ -66,7 +66,7 @@ void setup() {
   pinMode(PWM,OUTPUT);
   pinMode(LimitF,INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(outputencA),readEncoder,RISING);
-  delay(5000);
+  delay(3000);
   Home();
   HomeF();
   serialData.begin();
@@ -79,9 +79,9 @@ void loop() {
   delay(3000);
   time1=micros();
   AvengersAssemble();
-  delay(5000);
-   }
 }
+   }
+
 
 void AvengersAssemble(){
   int index=2;
@@ -90,7 +90,7 @@ void AvengersAssemble(){
     assembly++;
     index+=2;
   }
-  for(index;index<22;index++){
+  while(index<22){
     if(index==6 || index==11 || index==16){
       if(sequence[index]==7){
         storesquare();
@@ -111,15 +111,18 @@ void AvengersAssemble(){
     }
     TurnFeed(targ);
     if(assembly%2==0){
-      lid();
-      assembly++;
-      index+=2;
-    }
-    else if(assembly%2==1){
       base();
       assembly++;
       index+=2;
     }
+    else if(assembly%2==1){
+      lid();
+      assembly++;
+      index+=2;
+    }
+  }
+  if(storagesquare==2 && storagecircle==2){
+    while(1){}
   }
 }
 
@@ -135,34 +138,72 @@ void base(){
 }
 
 void lid(){
-  Actuate(-24,4,0);
+  Actuate(-26,4,0);
   Grip();
-  Actuate(-10,-58,0);
-  Actuate(-10,-58,-61);
-  Actuate(-4,-22,-61);
+  Actuate(-10,-50,0);
+  Actuate(-10,-50,-61);
+  Actuate(-5,-20,-61);
   UnGrip();
 }
 
 void storesquare(){
-  if(storagesquare==0){
-  Actuate(-24,4,-61);
+  if(storagesquare==1){
+  Actuate(-26,-2,-61);
   Grip();
-  Actuate(5,-65,-61);
-  Actuate(5,-65,-103);
-  Actuate(-18,0,-103);
+  Actuate(5,-66,-61);
+  Actuate(5,-66,-104);
+  Actuate(-18,0,-104);
   UnGrip();
+  Actuate(5,-66,-104);
+  Actuate(5,-66,0);
+  Actuate(0,0,0);
+  storagesquare++;
   }
-  else if(storagesquare==1){
+  else if(storagesquare==0){
+  Actuate(-26,-2,-61);
+  Grip();
+  Actuate(5,-66,-61);
+  Actuate(5,-66,-134);
+  Actuate(-18,0,-134);
+  UnGrip();
+  Actuate(5,-66,-134);
+  Actuate(5,-66,0);
+  Actuate(0,0,0);
+  storagesquare++;
   }
 }
 
 void storecircle(){
+  if(storagecircle==0){
+  Actuate(-26,-2,-61);
+  Grip();
+  Actuate(5,-66,-61);
+  Actuate(5,-66,-214);
+  Actuate(-18,0,-214);
+  UnGrip();
+  Actuate(5,-66,-214);
+  Actuate(5,-66,0);
+  Actuate(0,0,0);
+  storagecircle++;
+  }
+  else if(storagecircle==1){
+  Actuate(-26,-2,-61);
+  Grip();
+  Actuate(5,-66,-61);
+  Actuate(5,-66,-184);
+  Actuate(-18,0,-184);
+  UnGrip();
+  Actuate(5,-66,-184);
+  Actuate(5,-66,0);
+  Actuate(0,0,0);
+  storagecircle++;
+  }
 }
 
 void Home(){
   StepperX.setSpeed(200);
   StepperY.setSpeed(-300);
-  StepperZ.setSpeed(400);
+  StepperZ.setSpeed(300);
   while(1){
   if(digitalRead(LimitX)==0){
     HomeX = 1;
@@ -200,12 +241,15 @@ void Home(){
   StepperZ.setCurrentPosition(0);
   StepperX.moveTo(-ceil(40*ratio));
   StepperY.moveTo(ceil(67*ratio));
-  while(StepperX.currentPosition()!=-ceil(40*ratio) || StepperY.currentPosition()!=ceil(67*ratio)){
+  StepperZ.moveTo(-ceil(3*ratio));
+  while(StepperX.currentPosition()!=-ceil(40*ratio) || StepperY.currentPosition()!=ceil(67*ratio) || StepperZ.currentPosition()!=-ceil(3*ratio)){
     StepperX.run();
     StepperY.run();
+    StepperZ.run();
   }
   StepperX.setCurrentPosition(0);
   StepperY.setCurrentPosition(0);
+  StepperZ.setCurrentPosition(0);
 }
 
 void Actuate(int xangle, int yangle, int zangle){
@@ -279,18 +323,12 @@ void ActuateRelative(int xangle, int yangle, int zangle){
 }
 
 void Grip(){
-    for (grip; grip <= 195; grip += 1) {
-    Gripper.write(grip);
-    delay(3);
-  }
+    Gripper.write(54);
 }
 
 void UnGrip(){
-    for (grip; grip >= 75; grip -= 1) {
-    Gripper.write(grip);              
-    delay(3);                       
+    Gripper.write(9);                       
   }
-}
 
 void readEncoder(){
   int b =digitalRead(outputencB);
@@ -364,7 +402,7 @@ void HomeF(){
     pwr=0;
     dir=0;
     movemotor(dir,pwr,PWM,input1,input2);
-    delay(45);
+    delay(55);
     fix++;
     }
     movemotor(0,0,PWM,input1,input2);

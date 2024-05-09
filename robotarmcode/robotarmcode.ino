@@ -117,8 +117,9 @@ if(dir == 1)
  }
  else if ( dir ==0) 
  {
-  digitalWrite(in1,LOW);
-  digitalWrite(in2,LOW);
+  digitalWrite(pwm,HIGH);
+  digitalWrite(in1,HIGH);
+  digitalWrite(in2,HIGH);
  }
 
 }

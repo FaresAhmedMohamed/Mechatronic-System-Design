@@ -2,7 +2,7 @@
 import cv2
 import numpy
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 def empty(a):
     pass
@@ -16,7 +16,7 @@ def getContours(img,imgContour):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area==0 or area<1000:
+        if area==0 or area<4000:
             continue
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
@@ -30,7 +30,7 @@ def getContours(img,imgContour):
         prevarea = area
         px=x
         py=y
-        if x>60 and x<380 and y>60 and y<320:
+        if x>60 and x<380 and y>60 and y<300:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 3)
             if objCor == 4:
                 aspRatio = w/float(h)
