@@ -77,31 +77,12 @@ void loop() {
   time1=micros();
   vision();
   delay(3000);
-  Actuate(-26,4,0);
-  Grip();
-  Actuate(20,-15,0);
-  Actuate(20,-15,-61);
-  Actuate(-24,4,-61);
-  UnGrip();
-  Actuate(20,-15,-61);
-  Actuate(20,-15,0);
-  Actuate(-24,4,0);
-  Grip();
-  Actuate(-10,-58,0);
-  Actuate(-10,-58,-61);
-  Actuate(-4,-22,-61);
-  UnGrip();
-  Actuate(-24,4,-61);
-  Grip();
-  Actuate(5,-65,-61);
-  Actuate(5,-65,-103);
-  Actuate(-18,0,-103);
-  UnGrip();
+  AvengersAssemble();
   delay(5000);
    }
 }
 
-void AvengersAssemble(int sequence[22]){
+void AvengersAssemble(){
   int index=2;
   if(sequence[index]==0 && sequence[index+1]==0){
     base();
@@ -346,9 +327,9 @@ float pidcontrol (int target ,float kp,float kd,float ki){
   float deltaT =((float)(abs(currenttime-previoustime))) /1.0e6;
   
   //calculate error ,derivative ,integral
-  int e = (int)angle -target ;
+  float e = angle -target ;
 
-  if(abs(e)<increment)
+  if(fabs(e)<increment)
   {
     return 0;
   }
@@ -449,6 +430,7 @@ void vision(){
     counter++;
     targ+=45;
     }
+    targ-=45;
     signalout[0]=8-counter;
     serialData.Send(signalout);
     delay(100);
@@ -462,7 +444,7 @@ void vision(){
     {
     sequenceData.Get(sequence);
     }
-    delay(1000);
+    /*delay(1000);
     Serial.flush();
     int l=0;
     while(l<sizeof(sequence)){
@@ -470,6 +452,6 @@ void vision(){
     serialData.Send(signalout);
     l++;
     delay(1000);
-    }
+    }*/
     Serial.end();
 }
