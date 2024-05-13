@@ -3,7 +3,7 @@ import cv2
 import numpy
 
 # final-> 1-45, 2-90, 3-135, 4-180, 5-ccw, 6-cw, square-7, circle-8
-arduino = SerialObject("COM5")
+arduino = SerialObject("COM6")
 cap = cv2.VideoCapture(1)
 #img = cv2.imread("../TestImg/4objects.png") #remove when using cam
 #img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
@@ -29,7 +29,7 @@ def getContours(img,imgContour):
         differa=abs(area-prevarea)/area
         differx=abs(x-px)
         differy=abs(y-py)
-        if differx<50 and differy<50 and differa<0.5:
+        if differx<50 and differy<50 and differa<0.4:
             continue
         prevarea = area
         px=x
@@ -191,6 +191,7 @@ while True:
     go = arduino.getData()
     if go[0]=='9':
         arduinolist=vision()
+    arduinolist=["cb","sl","sl","cl","cb","sb","cl","sb"]
     print(arduinolist)
     final = sorting(arduinolist)
     print(final)

@@ -16,7 +16,7 @@ def getContours(img,imgContour):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area==0 or area<4000:
+        if area==0 or area<2000:
             continue
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
@@ -25,7 +25,7 @@ def getContours(img,imgContour):
         differa=abs(area-prevarea)/area
         differx=abs(x-px)
         differy=abs(y-py)
-        if differx<50 and differy<50 and differa<0.5:
+        if differx<50 and differy<50 and differa<0.4:
             continue
         prevarea = area
         px=x

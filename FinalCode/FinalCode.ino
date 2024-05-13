@@ -35,7 +35,7 @@ int targ = 45;
 const int maxspeed = 400;
 const int accel = 400;
 const float ratio = (800/101.25);
-int grip = 9;
+int grip = 1;
 int HomeX = 0;
 int HomeY = 0;
 int HomeZ = 0;
@@ -59,6 +59,7 @@ void setup() {
   StepperZ.setCurrentPosition(0);
   Gripper.attach(A3);
   Gripper.write(grip);
+  
   pinMode(outputencA,INPUT);
   pinMode(outputencB,INPUT);
   pinMode(input1,OUTPUT);
@@ -91,7 +92,7 @@ void AvengersAssemble(){
     index+=2;
   }
   while(index<22){
-    if(index==6 || index==11 || index==16){
+    if(index==6 || index==11 || index==16 || index==21){
       if(sequence[index]==7){
         storesquare();
         index++;
@@ -127,7 +128,7 @@ void AvengersAssemble(){
 }
 
 void base(){
-  Actuate(-26,4,0);
+  Actuate(-23,2,0);
   Grip();
   Actuate(20,-15,0);
   Actuate(20,-15,-61);
@@ -138,7 +139,7 @@ void base(){
 }
 
 void lid(){
-  Actuate(-26,4,0);
+  Actuate(-23,2,0);
   Grip();
   Actuate(-10,-50,0);
   Actuate(-10,-50,-61);
@@ -148,11 +149,11 @@ void lid(){
 
 void storesquare(){
   if(storagesquare==1){
-  Actuate(-26,-2,-61);
+  Actuate(-23,-2,-61);
   Grip();
   Actuate(5,-66,-61);
   Actuate(5,-66,-104);
-  Actuate(-18,0,-104);
+  Actuate(-19,0,-104);
   UnGrip();
   Actuate(5,-66,-104);
   Actuate(5,-66,0);
@@ -160,11 +161,11 @@ void storesquare(){
   storagesquare++;
   }
   else if(storagesquare==0){
-  Actuate(-26,-2,-61);
+  Actuate(-23,-2,-61);
   Grip();
   Actuate(5,-66,-61);
   Actuate(5,-66,-134);
-  Actuate(-18,0,-134);
+  Actuate(-19,0,-134);
   UnGrip();
   Actuate(5,-66,-134);
   Actuate(5,-66,0);
@@ -175,11 +176,11 @@ void storesquare(){
 
 void storecircle(){
   if(storagecircle==0){
-  Actuate(-26,-2,-61);
+  Actuate(-23,-2,-61);
   Grip();
   Actuate(5,-66,-61);
   Actuate(5,-66,-214);
-  Actuate(-18,0,-214);
+  Actuate(-19,0,-214);
   UnGrip();
   Actuate(5,-66,-214);
   Actuate(5,-66,0);
@@ -187,11 +188,11 @@ void storecircle(){
   storagecircle++;
   }
   else if(storagecircle==1){
-  Actuate(-26,-2,-61);
+  Actuate(-23,-2,-61);
   Grip();
   Actuate(5,-66,-61);
   Actuate(5,-66,-184);
-  Actuate(-18,0,-184);
+  Actuate(-19,0,-184);
   UnGrip();
   Actuate(5,-66,-184);
   Actuate(5,-66,0);
@@ -241,8 +242,8 @@ void Home(){
   StepperZ.setCurrentPosition(0);
   StepperX.moveTo(-ceil(40*ratio));
   StepperY.moveTo(ceil(67*ratio));
-  StepperZ.moveTo(-ceil(3*ratio));
-  while(StepperX.currentPosition()!=-ceil(40*ratio) || StepperY.currentPosition()!=ceil(67*ratio) || StepperZ.currentPosition()!=-ceil(3*ratio)){
+  StepperZ.moveTo(-ceil(2*ratio));
+  while(StepperX.currentPosition()!=-ceil(40*ratio) || StepperY.currentPosition()!=ceil(67*ratio) || StepperZ.currentPosition()!=-ceil(2*ratio)){
     StepperX.run();
     StepperY.run();
     StepperZ.run();
@@ -323,11 +324,11 @@ void ActuateRelative(int xangle, int yangle, int zangle){
 }
 
 void Grip(){
-    Gripper.write(54);
+    Gripper.write(40);
 }
 
 void UnGrip(){
-    Gripper.write(9);                       
+    Gripper.write(1);                       
   }
 
 void readEncoder(){
